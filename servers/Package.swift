@@ -15,6 +15,7 @@ let package = Package(
         .target(name: "SpotSearchCore"),
         .executableTarget(name: "FastName", dependencies: ["FastNameCore"]),
         .executableTarget(name: "FastNameDaemon", dependencies: ["FastNameCore"]),
-        .testTarget(name: "FastNameCoreTests", dependencies: ["FastNameCore"])
+        .testTarget(name: "FastNameCoreTests", dependencies: ["FastNameCore"]),
+        .testTarget(name: "SpotSearchCoreTests", dependencies: ["SpotSearchCore"]) // New tests
     ]
 )

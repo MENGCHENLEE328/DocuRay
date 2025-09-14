@@ -13,7 +13,7 @@ public final class SpotSearchIndex { // Facade for name/path search
     // MARK: - Mutation
     public func add(path: String, weight: Double = 1.0) { // Add a single file path
         prefix.insert(path: path)
-        fuzzy.insert(term: (path as NSString).lastPathComponent)
+        fuzzy.insert(term: (path as NSString).lastPathComponent, path: path)
         // weight currently unused; to integrate into scorer
     }
 
@@ -52,4 +52,3 @@ public struct SearchHit { // Single line hit
     public let path: String
     public let score: Double
 }
-

@@ -3,19 +3,26 @@
 import Foundation
 
 final class BKTree { // Minimal stub (linear until replaced)
-    private var terms: [String] = []
+    private var termToPaths: [String: Set<String>] = [:] // term -> paths
     private let queue = DispatchQueue(label: "spot.bktree", qos: SpotSearchConfig.lowPriorityQoS)
 
-    func insert(term: String) { queue.sync { terms.append(term.lowercased()) } }
-    func remove(term: String) { queue.sync { terms.removeAll { $0 == term.lowercased() } } }
+    func insert(term: String, path: String) { // map filename to path set
+        queue.sync { termToPaths[term.lowercased(), default: []].insert(path) }
+    }
+    func remove(term: String) { queue.sync { termToPaths.removeValue(forKey: term.lowercased()) } }
 
     func lookup(term: String, maxDistance: Int, limit: Int) -> [SearchHit] { // Linear fallback
         let q = term.lowercased()
         var out: [SearchHit] = []
         queue.sync {
-            for t in terms {
+            for (t, paths) in termToPaths {
                 let d = BKTree.editDistance(q, t)
-                if d <= maxDistance { out.append(SearchHit(path: t, score: 1.0 / Double(1 + d))) }
+                if d <= maxDistance {
+                    for p in paths {
+                        out.append(SearchHit(path: p, score: 1.0 / Double(1 + d)))
+                        if out.count >= limit { break }
+                    }
+                }
                 if out.count >= limit { break }
             }
         }
@@ -40,4 +47,3 @@ final class BKTree { // Minimal stub (linear until replaced)
         return dp[aa.count][bb.count]
     }
 }
-

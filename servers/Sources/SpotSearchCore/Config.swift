@@ -6,6 +6,5 @@ public struct SpotSearchConfig { // Centralized tunables
     public static let maxResults: Int = 100
     public static let maxQueueDepth: Int = 10_000
     public static let flushBatchSize: Int = 2_000
-    public static let lowPriorityQoS: QualityOfService = .utility
+    public static let lowPriorityQoS: DispatchQoS = .utility
 }
-
