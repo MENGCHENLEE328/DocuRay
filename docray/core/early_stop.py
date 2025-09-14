@@ -10,7 +10,13 @@ class EarlyStoppingEngine:
     """Computes stop decision with confidence and reason."""
 
     def __init__(self) -> None:
+        from docray.utils.config import load_yaml
+        cfg = load_yaml("configs/early_stop.yaml")
         self._hist: List[float] = []
+        self._conf_bias: float = float(cfg.get("confidence_bias", 0.0))
+        self._w_complexity: float = float(cfg.get("complexity_weight", 0.2))
+        self._w_time: float = float(cfg.get("time_pressure_weight", 0.1))
+        self._default_budget: float = float(cfg.get("time_budget_ms", 1800))
 
     def should_stop(
         self,
@@ -35,9 +41,11 @@ class EarlyStoppingEngine:
         entropy_max = math.log(len(norm)) if len(norm) > 1 else 1.0
 
         conf = 0.4 * top + 0.3 * min(gap * 3.0, 1.0) + 0.3 * (1.0 - (entropy / entropy_max))
+        conf += self._conf_bias
 
-        time_pressure = elapsed_ms / max(time_budget, 1.0)
-        dynamic_threshold = 0.9 - 0.2 * query_complexity - 0.1 * time_pressure
+        budget = time_budget or self._default_budget
+        time_pressure = elapsed_ms / max(budget, 1.0)
+        dynamic_threshold = 0.9 - self._w_complexity * query_complexity - self._w_time * time_pressure
 
         hist_adj = 0.0
         if self._hist:
@@ -54,4 +62,3 @@ class EarlyStoppingEngine:
 
         self._hist.append(conf)
         return stop, float(conf), reason
-

@@ -1,0 +1,8 @@
+# Author: Team DocuRay | Generated: config seed | Version: 0.1.0 | Modified: 2025-09-14
+# Minimal early-stop knobs (hot-reload not implemented yet)
+
+time_budget_ms: 1800
+confidence_bias: 0.0
+complexity_weight: 0.2
+time_pressure_weight: 0.1
+
