@@ -1,0 +1,17 @@
+{
+  "permissionMode": "strict",
+  "allowedTools": [
+    "mcp:spotlight",
+    "mcp:fsevents",
+    "mcp:indexer",
+    "mcp:search",
+    "mcp:preview",
+    "mcp:open",
+    "shell:read"
+  ],
+  "disallowedTools": [
+    "network:unbounded",
+    "shell:write",
+    "git:write"
+  ]
+}
