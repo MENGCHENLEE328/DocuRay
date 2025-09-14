@@ -110,6 +110,28 @@ public class SQLiteStore {
             try upsertFile(record)
         }
     }
+
+    public func getAllFiles() throws -> [FileRecord] {
+        let sql = "SELECT path, size, mod_time, is_dir FROM files ORDER BY path"
+        var stmt: OpaquePointer?
+        defer { if stmt != nil { sqlite3_finalize(stmt) } }
+
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else {
+            throw SQLiteError.prepareFailed(sqlite3_errmsg(db).map(String.init(cString:)) ?? "Unknown error")
+        }
+
+        var records: [FileRecord] = []
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            let record = FileRecord(
+                path: String(cString: sqlite3_column_text(stmt, 0)),
+                size: sqlite3_column_int64(stmt, 1),
+                modTime: sqlite3_column_int64(stmt, 2),
+                isDir: sqlite3_column_int(stmt, 3) == 1
+            )
+            records.append(record)
+        }
+        return records
+    }
 }
 
 public enum SQLiteError: Error {
